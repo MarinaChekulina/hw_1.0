@@ -1,10 +1,12 @@
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls.base import reverse
+from pandas.io import json
 
 from channel.forms import ChannelForm, RegistrationForm, AuthorizationForm
-from channel.models import Channel, Comment
+from channel.models import Channel, Comment, Like
 
 
 def main(request):
@@ -64,3 +66,38 @@ def login(request):
 def logout(request):
     auth_logout(request)
     return redirect(reverse('main'))
+
+
+def rate(request):
+    try:
+        q_id = int(request.POST['tp'][1:])
+        channel = Channel.objects.get(pk=q_id)
+        type = request.POST['tp'][0] == 'l'
+        user = request.user
+        like = Like.objects.filter(user=user, channel=channel).first()
+
+        if like is None:
+            if type:
+                Like.objects.create(channel=channel, user=user, like=True)
+                channel.rating += 1
+            else:
+                Like.objects.create(channel=channel, user=user, like=False)
+                channel.rating -= 1
+
+        elif like.like != type:
+            if like.like:
+                channel.rating -= 1
+            else:
+                channel.rating += 1
+            like.delete()
+
+        channel.save()
+        return HttpResponse(json.dumps({
+            'status': 'OK',
+            'new': channel.rating,
+        }), content_type='application/json')
+    except Exception as e:
+        return HttpResponse(json.dumps({
+            'status': 'error',
+            'info': str(e),
+        }), content_type='application/json')

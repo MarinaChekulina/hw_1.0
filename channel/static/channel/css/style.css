@@ -1,3 +1,13 @@
 .channel_img {
     width: 200px;
 }
+
+.plus, .minus, .number {
+    background-color: #999999;
+    font-size: 40px;
+}
+
+.plus:hover, .minus:hover {
+    background-color: #fff;
+     cursor: pointer;
+}
