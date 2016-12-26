@@ -1,0 +1,14 @@
+{% extends 'channel/base.html' %}
+
+{% block title %}Авторизация{% endblock %}
+
+{% block header %}<h2>Авторизация</h2>{% endblock %}
+
+{% block body %}
+    <form action="{% url 'login' %}" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn-primary" type="submit">Авторизироваться</button>
+    </form>
+
+{% endblock %}

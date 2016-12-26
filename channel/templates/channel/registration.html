@@ -1,0 +1,13 @@
+{% extends 'channel/base.html' %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block header %}<h2 class="text-left">Регистрация нового пользователя</h2>{% endblock %}
+
+{% block body %}
+    <form action="{% url 'registration' %}" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn-primary" type="submit">Зарегистрироваться</button>
+    </form>
+{% endblock %}
