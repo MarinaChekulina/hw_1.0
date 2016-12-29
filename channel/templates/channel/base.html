@@ -1,12 +1,18 @@
 {% load staticfiles %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" type="text/css" href="{% static 'channel/css/bootstrap.css' %}">
     <link rel="stylesheet" href="{% static 'channel/css/style.css' %}">
+
+    <script src="{% static 'channel/js/jquery-3.1.1.min.js' %}"></script>
+    <script src="{% static 'channel/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'channel/js/form_script.js' %}"></script>
 </head>
+
 <body>
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
@@ -18,16 +24,21 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">Channels</a>
+            <a class="user_up_level_label" href="/">Channels</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             {% if user.is_authenticated %}
-                <h1>{{ user.username }}</h1>
-                <button id="signout" type="submit" class="btn btn-success">Sign out</button>
-                <button id="_new" type="submit" class="btn btn-success">New</button>
+                <h1 class="user_up_level"> Your login: {{ user.username }}</h1>
+                <button id="signout" type="submit" class="btn btn-success button_style ">Sign out</button>
+                <button id="_new" type="submit" class="btn btn-success " data-toggle="modal"
+                        data-target="#modal1"> Add channel
+                </button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal1">Add
+                    channel(modal)
+                </button>
             {% else %}
-                <button id="signin" type="submit" class="btn btn-success">Sign in</button>
-                <button id="signup" type="submit" class="btn btn-success">Sign up</button>
+                <button id="signin" type="submit" class="btn btn-success button_style">Sign in</button>
+                <button id="signup" type="submit" class="btn btn-success button_style2">Sign up</button>
             {% endif %}
         </div>
     </div>
@@ -39,12 +50,14 @@
     {% block body %}{% endblock %}
     <hr>
     <footer>
-        <p>&copy; 2016 Company, Inc.</p>
+        <p>&copy; 2016 Chekulina Marina, BMSTU.</p>
     </footer>
 </div>
-<script src="{% static 'channel/js/jquery-3.1.1.min.js' %}"></script>
-<script src="{% static 'channel/js/bootstrap.min.js' %}"></script>
+
+
 <script>
+
+
     var signin = document.getElementById('signin');
     if (signin != undefined) {
         signin.onclick = function (event) {
@@ -73,7 +86,67 @@
             event.stopPropagation();
         }
     }
+
 </script>
 </body>
+
+{#модальное окно для добавления канала#}
+{% block modal %}
+    <div class="modal fade" id="modal1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Add channel</h3>
+                </div>
+                <div class="modal-body">
+                    <form class="add_channel" method="POST" enctype="multipart/form-data"
+                          action="{% url 'add_channel' %}">
+                        {% csrf_token %}
+                        <br>
+                        <label class="channel-title">
+                            Название канала:
+                            <input type="text" name="title" id="title">
+                        </label>
+                        </br>
+                        <br>
+                        <label class="channel-image">
+                            Логотип:
+                            <input type="file" name="image" id="image">
+                        </label>
+                        </br>
+                        <br>
+                        <label class="channel-category">
+                            Категория
+                            <input type="text" name="category" id="category">
+                        </label>
+                        </br>
+                        <br>
+                        <label class="channel-text">
+                            Описание:
+                            <input type="text" name="text" id="text">
+                        </label>
+                        </br>
+                        <br>
+                        <label class="channel-video">
+                            Ссылка на видео:
+                            <input type="text" name="video" id="video">
+                        </label>
+
+                        </br>
+                        <br>
+                        <label class="channel-date">
+                            Дата создания(гггг-мм-дд):
+                            <input type="text" name="date" id="date">
+                        </label>
+                        </br>
+
+                        <button class="btn btn-primary btn-save" type="submit">Save</button>
+                        <button class="btn btn-primary btn-close" type="button" data-dismiss="modal">Cancel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
 </html>
 

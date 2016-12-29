@@ -1,12 +1,18 @@
 {% extends 'channel/base.html' %}
+{% load staticfiles %}
 {% block title %}
     List of channels
 {% endblock %}
+{#{% block header %}List of channels{% endblock %}#}
 {% block body %}
+    <script src="{% static 'channel/js/jquery-3.1.1.min.js' %}"></script>
+    <script src="{% static 'channel/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'channel/js/form_script.js' %}"></script>
+
     {% for channel in channels %}
         <div class="row">
             <div class="col-md-4">
-                <img src="{{ channel.image.url }}">
+                <img class="channel_img" src="{{ channel.image.url }}">
             </div>
             <div class="col-md-8">
                 <h2>{{ channel.title }}</h2>
@@ -17,3 +23,6 @@
         </div>
     {% endfor %}
 {% endblock %}
+
+
+

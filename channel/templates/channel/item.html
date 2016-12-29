@@ -2,44 +2,78 @@
 
 {% block title %}Header{% endblock %}
 {% block body %}
-    <h1>{{ channel.title }}</h1>
+    <h1 class="channel_title">{{ channel.title }}</h1>
     <div class="row">
-        <div class="col-md-3">
-            <img class='channel_img' src="{{ channel.image.url }}">
+        <div class="col-md-4">
+            <p><img class='channel_img' src="{{ channel.image.url }}"></p>
+            <h3> Видео:</h3>
             <iframe width="560" height="315" src="{{ channel.video }}" frameborder="0" allowfullscreen></iframe>
         </div>
-        <div class="col-md-9">
-            <p>{{ channel.text }} </p>
+        <div class="col-md-8">
+            <p class="descript"> Описание: </p>
+            <p>{{ channel.text }}</p>
         </div>
     </div>
-    {% if user.is_authenticated %}
-        <span class="plus" id="l{{ channel.id }}">+</span>
-        <span class="number" id="n{{ channel.id }}">{{ channel.rating }}</span>
-        <span class="minus" id="d{{ channel.id }}">-</span>
-    {% else %}
-        <span class="number" id="rating{{ channel.id }}">Рейтинг: {{ channel.rating }}</span>
-    {% endif %}
-    <h3>Comments</h3>
-    {% for comment in channel.comment_set.all %}
-        <div class="row">
-            <div class="col-md-3">
-                {{ comment.author.username }}
-            </div>
-            <div class="col-md-9">
-                <p>{{ comment.text }} </p>
-            </div>
-        </div>
-    {% endfor %}
-    <div class="row">
-        <form method="post">
+
+    {#для подписки на канал (через отправку запроса AJAX)#}
+    <div>
+        <form onsubmit="return false" class="form_subscr" method="POST" action="{% url 'subscribe' channel.id %}">
             {% csrf_token %}
-            <div class="block blockanswer">
-                <b style="margin-left:15px">Your comment:</b>
-                <textarea name="text"></textarea>
-                <input class="button" type="submit" value="Send">
-            </div>
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary btn-ajax-form">Subscribe</button>
         </form>
     </div>
+    {% if user.is_authenticated %}
+        <div class="users">
+        <h5>List of users, who are subscribed on "{{ channel.title }}" channel:</h5>
+        {% for user in users %}
+            <p class="list_users">{{ user.username }}</p>
+            {#        {% for user1 in channel.user_subscription_set.all %}#}
+            {#            <p class="list_users">{{ user1.user_user_subscription.username }}</p>#}
+        {% endfor %}
+    {% endif %}
+
+</div>
+
+
+    {% if user.is_authenticated %}
+        <span class="number" id="n{{ channel.id }}">{{ channel.rating }} </span>
+        <span class="plus" id="l{{ channel.id }}">+</span>
+        <span class="minus" id="d{{ channel.id }}">-</span>
+    {% else %}
+        <span class="number rating" id="rating{{ channel.id }}">
+             Rating of channel:{{ channel.rating }}</span>
+    {% endif %}
+
+    <h3 class="comment_up">Comments</h3>
+    <dl class="dl-horizontal">
+        <dd>
+            {% for comment in channel.comment_set.all %}
+                <div class="row">
+                    <div class="col-md-3">
+                        <h3 class="comment_name">{{ comment.author.username }}</h3>
+                    </div>
+                    <div class="col-md-9">
+                        <p class="comment">{{ comment.text }} </p>
+                    </div>
+                </div>
+            {% endfor %}
+        </dd>
+    </dl>
+    <dd>
+        <div class="row">
+            <form method="post">
+                {% csrf_token %}
+                <div class="block blockanswer">
+                    <b style="margin-left:25px">Your comment:</b>
+                    <textarea rows="3" cols="75" name="text"></textarea>
+                    <input class="button" type="submit" value="Send comment">
+                </div>
+            </form>
+        </div>
+    </dd>
+
+
     <script>
         window.onload = function () {
 
@@ -77,5 +111,28 @@
                 })
             })
         };
+
+        /*Ajax отправка формы*/
+        $('.form_subscr').on('submit', function (event) {
+            event.preventDefault();
+            var channel_id = parseInt($('.channel_id').text());
+
+
+            $.ajax({
+                url: $('.form_subscr').attr('action'),
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    'csrfmiddlewaretoken': $('.form_subscr input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function (data) {
+                    $('.users').append('<p class="list_users">' + data.message + '</p>');
+                },
+                error: function () {
+                    console.log('Error!!!')
+                }
+
+            });
+        });
     </script>
 {% endblock %}

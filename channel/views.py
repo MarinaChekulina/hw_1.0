@@ -1,19 +1,25 @@
+from IPython.core.release import author
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
 from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls.base import reverse
+from django.views import View
 from pandas.io import json
 
 from channel.forms import ChannelForm, RegistrationForm, AuthorizationForm
-from channel.models import Channel, Comment, Like
+from channel.models import Channel, Comment, Like, Subscription
 
 
+# главная страница со списком каналов
 def main(request):
     channels = Channel.objects.all()
     return render(request, 'channel/main.html', {'channels': channels})
 
 
+# заполнение формы для создания нового канала
 @login_required
 def new(request):
     if request.method == 'POST':
@@ -27,6 +33,33 @@ def new(request):
     return render(request, 'channel/new.html', {'form': form})
 
 
+class SubscribeView(View):
+    def post(self, request, id):
+        if request.is_ajax():
+            channel = Channel.objects.filter(id__exact=id)[0]
+            users = channel.user_subscription.all()
+            subscr = Subscription()
+            subscr.user = request.user
+            subscr.channel = channel
+            subscr.save()
+        # # user = request.user.username
+        return HttpResponse(json.dumps({'message': request.user.username}))
+
+
+# добавление канала через модалку с валидацией js
+def add_channel(request):
+    if request.method == 'POST':
+        form = ChannelForm(request.POST, request.FILES)
+        if form.is_valid():
+            channel = Channel(**form.cleaned_data, author=request.user)
+            channel.save()
+            return redirect(reverse('item', args=[channel.id]))
+    else:
+        form = ChannelForm()
+    return render(request, 'channel/new.html', {'form': form})
+
+
+# для комментариев на созданном канале
 def item(request, id):
     channel = Channel.objects.get(id=id)
     if request.method == 'POST':
@@ -36,6 +69,7 @@ def item(request, id):
     return render(request, 'channel/item.html', {'channel': channel})
 
 
+# для регистрации нового пользователя
 def registration(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
@@ -49,6 +83,7 @@ def registration(request):
     return render(request, 'channel/registration.html', {'form': form})
 
 
+# для авторизации уже зарегистрированного пользователя
 def login(request):
     if request.method == 'POST':
         form = AuthorizationForm(request.POST)
@@ -68,10 +103,12 @@ def logout(request):
     return redirect(reverse('main'))
 
 
+# для лайков(рейтинг)
+@login_required
 def rate(request):
     try:
-        q_id = int(request.POST['tp'][1:])
-        channel = Channel.objects.get(pk=q_id)
+        ch_id = int(request.POST['tp'][1:])
+        channel = Channel.objects.get(pk=ch_id)
         type = request.POST['tp'][0] == 'l'
         user = request.user
         like = Like.objects.filter(user=user, channel=channel).first()

@@ -12,6 +12,8 @@ class RegistrationForm(forms.Form):
     password = forms.CharField(min_length=8, widget=forms.PasswordInput, label='Пароль:')
     password2 = forms.CharField(min_length=8, widget=forms.PasswordInput, label='Повторите ввод:')
     email = forms.EmailField(label='Email:')
+    first_name = forms.CharField(max_length=30, label='Имя')
+    surname = forms.CharField(max_length=30, label='Фамилия')
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
@@ -33,6 +35,8 @@ class RegistrationForm(forms.Form):
         user.username = data.get('username')
         user.password = make_password(data.get('password'))
         user.email = data.get('email')
+        user.first_name = data.get('first_name')
+        user.surname = data.get('surname')
         user.is_active = True
         user.is_superuser = False
         user.save()
@@ -59,4 +63,4 @@ class AuthorizationForm(forms.Form):
 class ChannelForm(forms.ModelForm):
     class Meta:
         model = Channel
-        exclude = ('author', 'rating')
+        exclude = ('author', 'rating', 'user_subscription')

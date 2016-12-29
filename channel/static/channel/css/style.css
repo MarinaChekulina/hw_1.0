@@ -1,13 +1,114 @@
 .channel_img {
-    width: 200px;
+    width: 300px;
 }
 
-.plus, .minus, .number {
-    background-color: #999999;
-    font-size: 40px;
+.plus {
+    background-color: green;
+    font-size: 30px;
+}
+
+.minus {
+    background-color: red;
+    font-size: 30px;
+}
+
+.number {
+    color: blue;
+    font-size: 25px;
 }
 
 .plus:hover, .minus:hover {
     background-color: #fff;
-     cursor: pointer;
+    cursor: pointer;
+}
+
+.comment_up {
+    font-size: 25px;
+    font-weight: bold;
+    color: midnightblue;
+    font-style: italic;
+    face: 'Times New Roman';
+}
+
+.comment {
+    font-size: 15px;
+    color: black;
+    font-style: italic;
+    face: 'Times New Roman';
+}
+
+.comment_name {
+    font-size: 15px;
+    color: darkblue;
+    font-style: italic;
+    face: 'Times New Roman';
+    font-weight: bold;
+}
+
+.rating {
+    font-size: 15px;
+    color: darkblue;
+    font-style: italic;
+    face: 'Times New Roman';
+    font-weight: bold;
+}
+
+.descript {
+    font-size: 15px;
+    color: darkblue;
+    font-style: italic;
+    face: 'Times New Roman';
+    font-weight: bold;
+}
+
+.like {
+    style: "center";
+}
+
+.user_up_level {
+    font-size: 25px;
+    color: lightgrey;
+    font-style: italic;
+    face: 'Times New Roman';
+    text-align: right;
+}
+
+.user_up_level_label {
+    font-size: 45px;
+    color: lightgray;
+    font-style: italic;
+    face: 'Times New Roman';
+    text-align: right;
+
+}
+
+.button_style {
+    position: fixed;
+    right: 340px;
+    /*bottom: 60px;*/
+}
+
+
+.button_style2 {
+    position: fixed;
+    right: 230px;
+    /*bottom: 50px;*/
+}
+
+.button_style3 {
+    right: 200px;
+    /*bottom: 60px;*/
+}
+
+
+.channel_title {
+    font-size: 30px;
+    color: darkblue;
+    font-style: italic;
+    face: 'Times New Roman';
+    font-weight: bold;
+}
+
+.list_users {
+    margin-left: 20px;
 }
