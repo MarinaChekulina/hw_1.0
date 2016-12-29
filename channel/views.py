@@ -11,12 +11,24 @@ from pandas.io import json
 
 from channel.forms import ChannelForm, RegistrationForm, AuthorizationForm
 from channel.models import Channel, Comment, Like, Subscription
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 # главная страница со списком каналов
 def main(request):
-    channels = Channel.objects.all()
-    return render(request, 'channel/main.html', {'channels': channels})
+    # по алфавиту по названиям
+    if not request.is_ajax():
+        #     return render(request, 'channel/main.html', {'channels': channels})
+        channels = Channel.objects.all().order_by('title')
+        page = request.GET.get('page')
+        paginator = Paginator(channels, 3)
+        try:
+            channels = paginator.page(page)
+        except PageNotAnInteger:
+            channels = paginator.page(1)
+        except EmptyPage:
+            channels = paginator.page(paginator.num_pages)
+        return render(request, 'channel/main.html', {'channels': channels})
 
 
 # заполнение формы для создания нового канала
@@ -59,7 +71,7 @@ def add_channel(request):
     return render(request, 'channel/new.html', {'form': form})
 
 
-# для комментариев на созданном канале
+
 def item(request, id):
     channel = Channel.objects.get(id=id)
     if request.method == 'POST':

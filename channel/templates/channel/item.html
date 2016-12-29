@@ -23,17 +23,13 @@
             <button type="submit" class="btn btn-primary btn-ajax-form">Subscribe</button>
         </form>
     </div>
-    {% if user.is_authenticated %}
-        <div class="users">
-        <h5>List of users, who are subscribed on "{{ channel.title }}" channel:</h5>
-        {% for user in users %}
-            <p class="list_users">{{ user.username }}</p>
-            {#        {% for user1 in channel.user_subscription_set.all %}#}
-            {#            <p class="list_users">{{ user1.user_user_subscription.username }}</p>#}
-        {% endfor %}
-    {% endif %}
 
-</div>
+    <div class="users">
+        <h5>List of users, who are subscribed on "{{ channel.title }}" channel:</h5>
+        {% for user in channel.user_subscription.all %}
+            <p class="list_users">{{ user.username }}</p>
+        {% endfor %}
+    </div>
 
 
     {% if user.is_authenticated %}

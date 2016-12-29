@@ -1,4 +1,5 @@
 {% extends 'channel/base.html' %}
+{% include page_template %}
 {% load staticfiles %}
 {% block title %}
     List of channels
@@ -10,7 +11,7 @@
     <script type="text/javascript" src="{% static 'channel/js/form_script.js' %}"></script>
 
     {% for channel in channels %}
-        <div class="row">
+        <div class="row" id="newItems">
             <div class="col-md-4">
                 <img class="channel_img" src="{{ channel.image.url }}">
             </div>
@@ -22,7 +23,56 @@
             </div>
         </div>
     {% endfor %}
+
+    <div class="pagination">
+
+        {% if channels.has_previous %}
+            <a href="?page={{ channels.previous_page_number }}">←</a>
+        {% endif %}
+
+        {% for num in channels.paginator.page_range %}
+            {% if num == channels.number %}
+                <span class="current"><b>{{ num }}</b></span>
+            {% else %}
+                <a href="?page={{ num }}"> {{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if channels.has_next %}
+            <a href="?page={{ channels.next_page_number }}">→</a>
+        {% endif %}
+
+
+    </div>
 {% endblock %}
 
 
+{% block content %}
+
+    <div class="page-header">
+        <div class="container">
+            <h1>Лента</h1>
+        </div>
+    </div>
+    <div class="container">
+        {% if pag_reviews %}
+            <ul class="media-list">
+                {% include page_template with pag_reviews=pag_reviews %}
+            </ul>
+        {% else %}
+            <p align="center">¯\_(ツ)_/¯</p>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block endbody %}
+    {{ block.super }}
+    <script src="{% static 'channel/js/el-pagination.js' %}"></script>
+    <script>
+        $.endlessPaginate({
+            paginateOnScroll: true,
+            paginateOnScrollMargin: 20
+        });
+    </script>
+{% endblock %}
 
