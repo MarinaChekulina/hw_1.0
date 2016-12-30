@@ -9,7 +9,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -23,7 +22,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(max_length=100, verbose_name='Название')),
-                ('image', models.ImageField(default='uploads/default_avatar.jpg', upload_to='uploads/', verbose_name='Картинка')),
+                ('image', models.ImageField(default='uploads/default_avatar.jpg', upload_to='uploads/',
+                                            verbose_name='Картинка')),
                 ('category', models.CharField(max_length=50, verbose_name='Категория')),
                 ('text', models.TextField(verbose_name='Текст')),
                 ('video', models.TextField(verbose_name='Видео')),
@@ -50,7 +50,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Profile',
             fields=[
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, related_name='users_prof', serialize=False, to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True,
+                                              related_name='users_prof', serialize=False, to=settings.AUTH_USER_MODEL)),
                 ('avatar', models.ImageField(upload_to='', verbose_name='Аватар')),
             ],
         ),
@@ -86,7 +87,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='channel',
             name='user_subscription',
-            field=models.ManyToManyField(related_name='users', through='channel.Subscription', to=settings.AUTH_USER_MODEL),
+            field=models.ManyToManyField(related_name='users', through='channel.Subscription',
+                                         to=settings.AUTH_USER_MODEL),
         ),
         migrations.AlterUniqueTogether(
             name='like',

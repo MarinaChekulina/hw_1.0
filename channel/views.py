@@ -71,7 +71,6 @@ def add_channel(request):
     return render(request, 'channel/new.html', {'form': form})
 
 
-
 def item(request, id):
     channel = Channel.objects.get(id=id)
     if request.method == 'POST':

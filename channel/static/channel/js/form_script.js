@@ -10,6 +10,7 @@ $(function () {
         var c_text = false;
         var c_video = false;
         var c_date = false;
+
         var el_t = $('#title');
         if (el_t.val().length > 100) {
             c_title = true;
@@ -51,6 +52,12 @@ $(function () {
         if (el_dat.val().length == 0) {
             c_date = true;
             $('.channel-date').after('<span class="text-error">Поле не может быть пустым</span>');
+        }
+
+        var patt = /^[0-9]{4}\-[0-9]{2}\-[0-9]{2}$/i;
+        if (!patt.test(el_dat.val())) {
+            c_date = true;
+            $('.channel-date').after('<span class="text-error">Введите дату в правильном формате!</span>');
         }
 
         return (c_title || c_image || c_category || c_text || c_video || c_date);
