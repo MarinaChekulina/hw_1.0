@@ -73,7 +73,60 @@ $(function () {
         $('#title').val('');
         $('.text-error').remove();
     });
-});
+
+    /*Бесконечная прокрутка*/
+    var last_channel_id = 3;
+    $(window).scroll(function () {
+        var windowScroll = $(window).scrollTop();
+        var windowHeight = $(window).height();
+        var documentHeight = $(document).height();
+
+        console.log(windowScroll + ' ' + windowHeight + ' ' + documentHeight);
+
+        if ((windowScroll + windowHeight) >= (documentHeight - 1.0)) {
+            $.ajax({
+                url: '/add_content',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    'last_channel_id': last_channel_id,
+                    'csrfmiddlewaretoken': $('.add_channel input[name=csrfmiddlewaretoken]').val()
+                },
+                error: function () {
+                    console.log('Error_form_script')
+                },
+                success: function (data) {
+                    if (data.message != 'stop') {
+                        $('.channels_list').append(
+                            '<div class="row">' +
+                            '<div class="col-md-4">' +
+                            '<img class="channel_img" src="' + data.message.channel_image + '">' +
+                            '</div>' +
+                            '<div class="col-md-8">' +
+                            '<h2>' +
+                            data.message.channel_title +
+                            '</h2>' +
+                            '<p>' +
+                            data.message.channel_text +
+                            '</p>' +
+                            '<p>' +
+                            '<a class="btn btn-default" role="button" href="/item/' + data.message.channel_id + '">' +
+                            'View details &raquo;' +
+                            '</' + 'a>' +
+                            '</p>' +
+                            '</div>' +
+                            '</div>'
+                        );
+                        last_channel_id += 1;
+                    }
+                }
+            });
+        }
+    })
+    ;
+
+})
+;
 
 
 

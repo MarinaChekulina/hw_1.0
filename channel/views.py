@@ -17,18 +17,16 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # главная страница со списком каналов
 def main(request):
     # по алфавиту по названиям
-    if not request.is_ajax():
-        #     return render(request, 'channel/main.html', {'channels': channels})
-        channels = Channel.objects.all().order_by('title')
-        page = request.GET.get('page')
-        paginator = Paginator(channels, 3)
-        try:
-            channels = paginator.page(page)
-        except PageNotAnInteger:
-            channels = paginator.page(1)
-        except EmptyPage:
-            channels = paginator.page(paginator.num_pages)
-        return render(request, 'channel/main.html', {'channels': channels})
+    channels = Channel.objects.all().order_by('title')
+    # page = request.GET.get('page')
+    # paginator = Paginator(channels, 3)
+    # try:
+    #     channels = paginator.page(page)
+    # except PageNotAnInteger:
+    #     channels = paginator.page(1)
+    # except EmptyPage:
+    #     channels = paginator.page(paginator.num_pages)
+    return render(request, 'channel/main.html', {'channels': channels})
 
 
 # заполнение формы для создания нового канала
@@ -58,6 +56,34 @@ class SubscribeView(View):
         return HttpResponse(json.dumps({'message': request.user.username}))
 
 
+class ChannelView(View):
+    def get(self, request, id):
+        channel = Channel.objects.filter(id__exact=id)[0]
+        users = channel.user_subscription.all()
+        form = ChannelForm()
+        dictionary = {
+            'channel': channel,
+            'user': request.user.get_full_name(),
+            'users': users,
+            'form': form,
+        }
+        return render(request, 'channel/item.html', dictionary)
+
+
+def add_channel1(request):
+    if request.method == 'POST':
+        channel = Channel()
+        channel.title = request.POST.get('title')
+        channel.category = request.POST.get('category')
+        channel.image = request.FILES.get('image')
+        channel.video = request.POST.get('video')
+        channel.text = request.POST.get('text')
+        channel.date = request.POST.get('date')
+        channel.save()
+        return HttpResponseRedirect('/item/{0}'.format(channel.id))
+    return HttpResponseRedirect('/')
+
+
 # добавление канала через модалку с валидацией js
 def add_channel(request):
     if request.method == 'POST':
@@ -78,6 +104,23 @@ def item(request, id):
         if text is not None and len(text) > 0:
             Comment(author=request.user, text=text, channel=channel).save()
     return render(request, 'channel/item.html', {'channel': channel})
+
+
+class AddContent(View):
+    def post(self, request):
+        if request.is_ajax():
+            last_channel_id = int(request.POST.get('last_channel_id'))
+            channels = Channel.objects.all()
+            if last_channel_id == channels.count():
+                return HttpResponse(json.dumps({'message': 'stop'}))
+            channel = channels[last_channel_id:last_channel_id + 1][0]
+            data = {
+                'channel_id': channel.id,
+                'channel_image': channel.image.url,
+                'channel_title': channel.title,
+                'channel_text': channel.text
+            }
+            return HttpResponse(json.dumps({'message': data}))
 
 
 # для регистрации нового пользователя
