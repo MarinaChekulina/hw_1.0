@@ -83,7 +83,7 @@ $(function () {
 
         console.log(windowScroll + ' ' + windowHeight + ' ' + documentHeight);
 
-        if ((windowScroll + windowHeight) >= (documentHeight - 1.0)) {
+        if ((windowScroll + windowHeight) >= (documentHeight - 0.2)) {
             $.ajax({
                 url: '/add_content',
                 type: 'POST',

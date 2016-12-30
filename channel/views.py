@@ -56,32 +56,32 @@ class SubscribeView(View):
         return HttpResponse(json.dumps({'message': request.user.username}))
 
 
-class ChannelView(View):
-    def get(self, request, id):
-        channel = Channel.objects.filter(id__exact=id)[0]
-        users = channel.user_subscription.all()
-        form = ChannelForm()
-        dictionary = {
-            'channel': channel,
-            'user': request.user.get_full_name(),
-            'users': users,
-            'form': form,
-        }
-        return render(request, 'channel/item.html', dictionary)
+# class ChannelView(View):
+#     def get(self, request, id):
+#         channel = Channel.objects.filter(id__exact=id)[0]
+#         users = channel.user_subscription.all()
+#         form = ChannelForm()
+#         dictionary = {
+#             'channel': channel,
+#             'user': request.user.get_full_name(),
+#             'users': users,
+#             'form': form,
+#         }
+#         return render(request, 'channel/item.html', dictionary)
 
 
-def add_channel1(request):
-    if request.method == 'POST':
-        channel = Channel()
-        channel.title = request.POST.get('title')
-        channel.category = request.POST.get('category')
-        channel.image = request.FILES.get('image')
-        channel.video = request.POST.get('video')
-        channel.text = request.POST.get('text')
-        channel.date = request.POST.get('date')
-        channel.save()
-        return HttpResponseRedirect('/item/{0}'.format(channel.id))
-    return HttpResponseRedirect('/')
+# def add_channel(request):
+#     if request.method == 'POST':
+#         channel = Channel()
+#         channel.title = request.POST.get('title')
+#         channel.category = request.POST.get('category')
+#         channel.image = request.FILES.get('image')
+#         channel.video = request.POST.get('video')
+#         channel.text = request.POST.get('text')
+#         channel.date = request.POST.get('date')
+#         channel.save()
+#         return HttpResponseRedirect('/item/{0}'.format(channel.id))
+#     return HttpResponseRedirect('/')
 
 
 # добавление канала через модалку с валидацией js
